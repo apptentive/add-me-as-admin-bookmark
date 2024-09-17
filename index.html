@@ -32,42 +32,44 @@
     </div>
 
     <script>
-        document.getElementById('bookmarklet-form').addEventListener('submit', function(e) {
-            e.preventDefault();
+      document.getElementById('bookmarklet-form').addEventListener('submit', function(e) {
+      e.preventDefault();
 
-            // Get user input
-            const name = document.getElementById('name').value.trim();
-            const email = document.getElementById('email').value.trim();
+      // Get user input
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
 
-            if (!name || !email) {
-                alert('Please enter both name and email.');
-                return;
-            }
+      if (!name || !email) {
+          alert('Please enter both name and email.');
+          return;
+      }
 
-            // Encode user input to ensure it's safe for URLs
-            const encodedName = encodeURIComponent(name);
-            const encodedEmail = encodeURIComponent(email);
+      // Use JSON.stringify to safely encode the strings
+      const nameEscaped = JSON.stringify(name);
+      const emailEscaped = JSON.stringify(email);
 
-            // Create the bookmarklet JavaScript code
-            const jsCode = `
-                javascript:
-                document.querySelector('input[name="new_member_name"]').value="${encodedName}";
-                document.querySelector('input[name="new_member_email"]').value="${encodedEmail}";
-                document.querySelector('select[name="new_member_role"]').value="admin";
-                document.querySelector('button.primary.invite-member').click();
-            `.replace(/\s+/g, ''); // Minify by removing whitespace
+      // Create the bookmarklet JavaScript code
+      const jsCode = `
+          javascript:
+          (function(){
+              document.querySelector('input[name="new_member_name"]').value=${nameEscaped};
+              document.querySelector('input[name="new_member_email"]').value=${emailEscaped};
+              document.querySelector('select[name="new_member_role"]').value="admin";
+              document.querySelector('button.primary.invite-member').click();
+          })();
+      `.replace(/\s+/g, ''); // Minify by removing whitespace
 
-            // Encode the entire JavaScript code for use in a URL
-            const bookmarklet = encodeURI(jsCode);
+      // Encode the entire JavaScript code for use in a URL
+      const bookmarklet = encodeURI(jsCode);
 
-            // Set the href of the bookmarklet link
-            const bookmarkletLink = document.getElementById('bookmarklet-link');
-            bookmarkletLink.href = bookmarklet;
-            bookmarkletLink.textContent = `Invite ${name}`;
+      // Set the href of the bookmarklet link
+      const bookmarkletLink = document.getElementById('bookmarklet-link');
+      bookmarkletLink.href = bookmarklet;
+      bookmarkletLink.textContent = `Invite ${name}`;
 
-            // Show the bookmarklet container
-            document.getElementById('bookmarklet-container').style.display = 'block';
-        });
+      // Show the bookmarklet container
+      document.getElementById('bookmarklet-container').style.display = 'block';
+      });
     </script>
 </body>
 </html>
